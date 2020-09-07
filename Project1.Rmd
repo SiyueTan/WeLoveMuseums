@@ -1,0 +1,400 @@
+---
+title: "The most popular museum _Analysis+WorkingProcess"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+# install.packages("corrplot")
+
+```
+
+## An Introduction to the Data
+
+This data set is collected by annecool37 from TripAdvisor. As an museum fun I am always interested in how I could select museum from internet in a more effect way, or in the other world, what are the effective factors for select a good museum?
+
+
+## Clean up my Data
+
+In order to work with this data, we need to clean and categorized the data set first.
+
+step 1: Delete duplicate data
+
+step 2: Sort through data to check erro
+
+After first clean up, there are nearly 1,000 museums to work with. In order to work easily, I decied to categorize museum by country and continet.
+
+step 3: Country classification
+
+step 4: Continet Classification
+
+
+With this clean data set, I start my general analysis
+
+```{r data}
+
+#Import the data
+library(ggplot2)
+
+museum <- read_csv(file = "data/museum.csv") 
+summary(museum)
+
+
+
+# group museums by continent
+
+Eu <- museum  %>% 
+  filter(grepl ("Europe", Continent))
+
+
+As <- museum  %>% 
+  filter(grepl ("Asia", Continent))
+
+Af <- museum  %>% 
+  filter(Continent == "Africa")
+
+Na<- museum  %>% 
+  filter(grepl ("North America", Continent))
+
+Sa<- museum  %>% 
+  filter(grepl ("South America", Continent))
+
+Oc<- museum  %>% 
+  filter(grepl ("Oceania", Continent))
+
+
+
+
+
+```
+
+## Does number of museums refelct the quality of museums?
+
+My first step of analysis focus on continet and country. Does users on Tripadviser has a perference in location? If so, the count of museums might effect the review of the museums.
+
+
+``` {r Step 1}
+library(ggplot2)
+
+# museums count by continent
+
+ggplot(museum, aes(x=Continent)) +
+  geom_bar(fill="black", alpha = 0.5 )+
+  labs(x="Continent", y="Count ",title="Where museums located?") +
+  theme_minimal()
+
+
+#museums count by country
+
+ggplot(museum, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country on TripAdviser") +
+  theme_minimal()
+
+#country+continent
+
+ggplot(Eu, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in Europe") +
+  theme_minimal()
+
+ggplot(As, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in Asia") +
+  theme_minimal()
+
+ggplot(Sa, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in South America") +
+  theme_minimal()
+
+ggplot(Na, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in North America") +
+  theme_minimal()
+
+ggplot(Af, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in Africa") +
+  theme_minimal()
+
+ggplot(Oc, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in Oceania") +
+  theme_minimal()
+
+
+
+
+
+```
+
+Clearly, Europe and North America have the most rated museums on TripAdviser. Also worth notice that United States have almost 400% more museums on the list.But it does not means museum in United States are in generally better than others. TripAdviser is an America company which means a huge number of users are American or English Speaker, it does not directly reflet the quality of the museums.
+
+# Does rating of museums refelct the quality of museums?
+
+How rating distrubution looks like by geo?
+
+```{r Step 2}
+
+
+#museum rating stack chart by Continent
+
+ggplot(museum, aes(x=Rating, fill=Continent)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed") +
+  theme_minimal()
+
+
+#museum rating stack chart by Country
+
+ggplot(Eu, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in Europe") +
+  theme_minimal()
+
+ggplot(As, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in Asia") +
+  theme_minimal()
+
+ggplot(Na, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in North America") +
+  theme_minimal()
+
+ggplot(Sa, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in South America") +
+  theme_minimal()
+
+
+ggplot(Oc, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in Ociean") +
+  theme_minimal()
+
+ggplot(Af, aes(x=Rating)) +
+  geom_bar(position="stack")+
+  labs(x="Rating", y="Count ",title="How ratings are distributed in Africa") +
+  theme_minimal()
+
+```
+
+Clearly most museums are rate between 4 to 4.5, no matter which country and continent it located. There are many museums has the same rate, it also has no direct connection with the quality of the museums.
+
+However, I find something very interesting, seems museums in North America are generally higher rated than others (most are rate as 4.5). But it does not means museums in North America are better then the rest of the world.
+
+## Does North America rated heigher than other places? (FAILED!!!)
+
+I start to concluated mean, median for my data set.
+``` {r Step 3}
+
+ggplot()+
+  
+  ggtitle("Rating Distribution of Continet")+
+  geom_density(data=Eu,aes(x=Rating), color="blue") +
+  geom_vline( xintercept = mean(Eu$Rating), linetype = "dashed", color = "blue") +
+  geom_text(aes(x= mean(Eu$Rating), y=.04), label= "Europe",color = "blue", angle=90, vjust=-0.5, hjust=0)+
+  
+
+  geom_density(data=As,aes(x=Rating), color="orange") +
+  geom_vline( xintercept = mean(As$Rating), linetype = "dashed", color = "orange") +
+  geom_text(aes(x= mean(As$Rating), y=.04), label= "Asia",color = "orange", angle=90, vjust=-0.5, hjust=0)+
+  
+
+  geom_density(data=Na,aes(x=Rating), color="darkgreen") +
+  geom_vline( xintercept = mean(Na$Rating), linetype = "dashed", color = "darkgreen") +
+  geom_text(aes(x= mean(Na$Rating), y=.04), label= "North America", color = "darkgreen",angle=90, vjust=-0.5, hjust=0)+
+  
+
+  geom_density(data=Sa,aes(x=Rating), color="brown") +
+  geom_vline( xintercept = mean(Sa$Rating), linetype = "dashed", color = "brown") +
+  geom_text(aes(x= mean(Sa$Rating), y=.04), label= "South America", color = "brown",angle=90, vjust=-0.5, hjust=0) +
+  
+  geom_density(data=Oc,aes(x=Rating), color="purple") +
+  geom_vline( xintercept = mean(Oc$Rating), linetype = "dashed", color = "purple") +
+  geom_text(aes(x= mean(Oc$Rating), y=.04), label= "Oceania", color = "purple",angle=90, vjust=-0.5, hjust=0)+
+  
+  geom_density(data=Af,aes(x=Rating), color="gray") +
+  geom_vline( xintercept = mean(Af$Rating), linetype = "dashed", color = "gray") +
+  geom_text(aes(x= mean(Af$Rating), y=.04), label= "Africa", color = "gray",angle=90, vjust=-0.5, hjust=0)+
+
+  
+  labs(x="Rating", y=" Probability of Rating ") +
+  theme_minimal()+
+  scale_x_continuous(breaks = NULL)
+
+
+
+
+
+```
+
+However, rating number is very different compare to other number data set, so the distrabuion does not really show the probability of ratings.
+
+
+## Does rank of museums refelct the quality of museums?
+
+```{r Step 4}
+
+library(ggplot2)
+
+#museum rank stack chart by Continent
+
+
+ggplot(museum, aes(x=Rank, fill=Continent)) +
+  geom_bar(position="stack")+
+  labs(x="Rank", y="Count ",title="How ranks are distributed") +
+  theme_minimal()
+
+
+
+
+```
+
+In fact, there can be several museums have same rank number.Morover, there are huge difference in museum numbers in each continent. In this case, the visualization can not represent the posibility of better museums. We shall start looking at the review count. The more reviews a museum has, more people have been there.
+
+
+From this visualization we know that most museums are ranking in 100 range, which means they are ranked by their country. If a country has more museums then others, it is possible many good museums are not rank as the top. 
+
+
+## Does museum review count reflect the quality of the museums?
+
+
+Let's limited our dataset to the top 50 ranked museums.
+
+```{r Step 5}
+
+museum100 <- filter(museum,Rank <= 100)
+ggplot( museum100, aes(x=ReviewCount, fill=Continent)) +
+    geom_histogram( binwidth=1000)
+```
+
+Clearly most museums have under 20,000 reviews.
+
+
+## The combination
+
+Since there are no 1 elements can directly show the quality of the museums, I start to combin different elements in order to find a rang that represent museum from different perspective.
+
+
+##Finding relationship between ranking and rate
+```{r Step 6}
+
+museum100<- filter(museum, Rank <=100)
+ggplot(museum100, aes(x=Rank, y=Rating,size=ReviewCount)) +
+    geom_point(alpha=0.05) +labs( x = "Museum Rank", y=" Museum Rating", size = "Review Count",title = "Elements for top 50 museums")+
+  theme_minimal()
+
+
+```
+
+From this visualization, it seems museum with heigher rank, also has heigher rating and review count. In order to make a better choice in museum selection, we are looking for the darkest, and biggest area on this map :rank in top 50. 
+
+
+## Finding the range
+```{r Step 7}
+
+museum50 <- filter(museum100, Rank <=50)
+counts <- museum50 %>% mutate(group = cut(ReviewCount, breaks = c(0,5000,10000,15000,20000,25000,30000,35000, 40000,450000,50000,55000,60000,65000) , labels=c("5000","10000","15000","20000","25000","30000","35000", "40000","450000","50000","55000","60000","65000")))
+counts <- counts %>% group_by(group, Rating) %>% summarize(total = n())
+
+                 
+ggplot(counts) +
+  geom_tile(mapping=aes(x=Rating, y= group, fill=total), color="#FFFFFF") +
+  scale_fill_gradient(low="#deebf7", high="#3182bd") +
+  theme(panel.grid.major = element_blank(), axis.text = element_text(size = 10)) +
+  labs(y = "Review Count", x = "Rating ", fill="Count", title = "Relationship between Review Count and Rating for Top 50")+
+  theme_minimal()
+
+
+counts2 <- museum50 %>% 
+  mutate(group2 = cut(Rank, breaks = c(0,5,10,15,20,25,30,35,40,45,50))) %>% mutate(group = cut(ReviewCount, c(0,5000,10000,15000,20000,25000,30000,35000, 40000,450000,50000,55000,60000,65000) , labels=c("5000","10000","15000","20000","25000","30000","35000", "40000","450000","50000","55000","60000","65000")))
+counts2 <- counts2 %>% group_by(group, group2) %>% summarize(total = n())
+
+                 
+ggplot(counts2) +
+  geom_tile(mapping=aes(x=group2, y= group, fill=total), color="#FFFFFF") +
+  scale_fill_gradient(low="#deebf7", high="#3182bd") +
+  theme(panel.grid.major = element_blank(), axis.text = element_text(size = 10)) +
+  labs(y = "Review Count", x = "Rank ", fill="Count", title = "Relationship between Review Count and Rank for Top 50")+
+  theme_minimal()
+
+
+counts3 <- museum50%>% mutate(group3 = cut(Rank, breaks = c(0,5,10,15,20,25,30,35,40,45,50))) 
+counts3 <- counts3 %>% group_by(Rating, group3) %>% summarize(total = n())
+ggplot(counts3) +
+  geom_tile(mapping=aes(x=Rating, y= group3, fill=total), color="#FFFFFF") +
+  scale_fill_gradient(low="#deebf7", high="#3182bd") +
+  theme(panel.grid.major = element_blank(), axis.text = element_text(size = 10)) +
+  labs(y = "Rank", x = "Ranting ", fill="Count", title = "Relationship between Rank and Rating for Top 50")+
+  theme_minimal()
+
+
+museum100
+```
+The hard part is, we do not know what really happened for the review under 5000.
+
+We could say, museums with over 5000 reviews, rating between 4 - 5 are generally recomannned by many people. Therefore, we could say: the heigher museum ranking and review counts are, the better museums might be, rating 4.5 is highly possible the best range.
+
+```{r my list}
+
+museumList<- filter(museum50, Rating == 4.5)
+museumList<- filter(museumList,ReviewCount >= 5000)
+
+museumList
+
+ggplot(museumList, aes(x=Continent)) +
+  geom_bar(fill="black", alpha = 0.5 )+
+  labs(x="Continent", y="Count ",title="Where museums located?") +
+  theme_minimal()
+
+ggplot(museumList, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country on TripAdviser") +
+  theme_minimal()
+
+Eu <- museumList  %>% 
+  filter(grepl ("Europe", Continent))
+
+ggplot(Eu, aes(y=Country)) +
+  geom_bar(position="stack", fill="black", alpha = 0.5)+
+  labs(x="Count", y="Country",title="Most popular country in Europe") +
+  theme_minimal()
+
+
+```
+The advantages of Europe have become more obvious, and Italy has surpassed Britain to become the most popular country. The number of museums in Asian countries has decreased. This proves that most tourists choose Europe, North America and South America as destinations.
+
+## Other Visualization
+```{r step 9}
+# Create a data frame for categories
+# at each 'cut' value
+
+
+MuseumTopic <- museum %>% group_by(MuseumTopic) %>% summarize(total = n())
+
+
+ggplot(MuseumTopic) +
+  geom_bar(aes(x=total, y=MuseumTopic), stat="identity", width=0.5)+
+  theme_minimal()
+
+ggplot(MuseumTopic) +
+  geom_bar(aes(x =total , y=MuseumTopic, fill = MuseumTopic), stat="identity", width=1) +
+  coord_polar("y")+
+  theme_minimal()
+
+ggplot(MuseumTopic) +
+  geom_bar(aes(x = MuseumTopic, y=total, fill = MuseumTopic), stat="identity", width=1) +
+  coord_polar("y")+
+  theme_minimal()
+
+ggplot(MuseumTopic) +
+  geom_bar(aes(x = "", y=total, fill = MuseumTopic), stat="identity", width=1) +
+  coord_polar("y") +
+  theme_void() +
+  labs(fill="Count", title = "Most popular museum topics")
+```
+```
